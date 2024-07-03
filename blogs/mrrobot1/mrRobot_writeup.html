@@ -1,0 +1,92 @@
+
+<a href="../../index.html">Go HOME</a>
+
+<h1 id="writeup-of-mr-robot-1-vulnhub-machine">Writeup of Mr. Robot 1
+    Vulnhub Machine</h1>
+<p>This machine is available at vulnhub as <a href="https://vulnhub.com/entry/mr-robot-1,151/">MR-ROBOT: 1</a>.</p>
+<!-- Mr. Robot 1: https://vulnhub.com/entry/mr-robot-1,151/ -->
+
+<p>The description says:</p>
+<blockquote>
+    <p>Based on the show, Mr. Robot.<br />
+        This VM has three keys hidden in different locations. Your goal is to
+        find all three. Each key is progressively difficult to find.<br />
+        The VM isn't too difficult. There isn't any advanced exploitation or
+        reverse engineering. The level is considered beginner-intermediate.</p>
+</blockquote>
+<h2 id="start-exploiting">Start Exploiting</h2>
+<p>The nmap scan of the machines yeilds:</p>
+<p><img src="image-1.png" alt="Nmap scan" /></p>
+<p>As we see in above figure two ports are open https and http that
+    means it is a webserver hosting a website.</p>
+<p>Opening the link in browser:</p>
+<p><img src="image-2.png" alt="Opening the website" /></p>
+<p>Let's see what we can do now. I started pocking at the machine. Then
+    I found:</p>
+<p><img src="image-3.png" alt="key-1-of-3" /></p>
+<p>Voila! We found one of the three keys. Let's see what other file
+    containes.</p>
+<p><img src="image-4.png" alt="fsocity.dic" /></p>
+<p>It looks like some sort of dictionary.<br />
+    Let's see what we can do with it.<br />
+    Well I'm stuck here, I think join action will do something in the web
+    app.<br />
+    Fast forward some minutes, same mail address is given as input but it is
+    only saying that "we will be in touch".<br />
+    Maybe fsocity.dic contains passwords for user root.<br />
+    Only two ports are
+    open................................................</p>
+<p>Finally we found something,</p>
+<p><img src="image.png" alt="found-something" /></p>
+<p>Here is a login page,</p>
+<p><img src="image-5.png" alt="login-page" /></p>
+<p>now how can we use fsocity.dic wordlist to get in. After some
+    pocking.</p>
+<p>We find this,...</p>
+<p><img src="image-6.png" alt="rss-feed" /></p>
+<p>and then this,</p>
+<p><img src="image-7.png" alt="wp-4.3.1-rce" /></p>
+<!-- Exploit link: https://www.exploit-db.com/exploits/50255 -->
+
+<p>But I think their is another way, as the machine was designed in 2016
+    and this exploit is from 2021.<br />
+    So, for now we will not be using the exploit.</p>
+<p>With the help of ChatGPT we found new path, brute forcing wordpress
+    login window using wpscan or hydra.<br />
+    The url given should be of wordpress login page.</p>
+<p><code>wpscan --url 192.168.180.129/wp-login.php --password fsocity_uniq.dic --username admin</code></p>
+<p>But it looks like it didn't work:</p>
+<p><img src="image-8.png" alt="no-success" /></p>
+<p><img src="image-9.png" alt="no-success" /></p>
+<p>Looks like Mr. Robot theme works,</p>
+<p><img src="image-10.png" alt="success" /></p>
+<p><img src="image-11.png" alt="interesting" /></p>
+<p>Interesting isn't it.</p>
+<p>Using this login I was able to log into admin panel of
+    wordpress.<br />
+    Following chatGPT hints, I have modified 404.php file in themes, so that
+    it invokes a reverse shell.</p>
+<p>Voila! we got a reverse shell.</p>
+<p><img src="image-12.png" alt="rev-shell" /></p>
+<p>Now we have to decrypt the md5 hash.</p>
+<p><img src="image-13.png" alt="md5-hash" /></p>
+<p>We will use hashcat to decrypt it.</p>
+<p><img src="image-14.png" alt="hashcat" /></p>
+<p>but looks like it didn't work.</p>
+<p><img src="image-15.png" alt="didnt-work" /></p>
+<p>Using rockyou wordlist.....</p>
+<p><img src="image-17.png" alt="cracked" /></p>
+<p>Aaaaaaaaaaaaaannnnnnndddd we are in............</p>
+<p><img src="image-19.png" alt="in" /></p>
+<p>Now Previlege Escalation part.<br />
+    Finding programs having setuid bit set.<br />
+    <code>find -type f -perm -04000 -ls 2&gt;/dev/null</code><br />
+    it gives various outputs one of then is /usr/local/bin/nmap.
+</p>
+<p><img src="image-20.png" alt="key3" /></p>
+<p>So we have obtained all the keys:</p>
+<ul>
+    <li>key-1-of-3: 073403c8a58a1f80d943455fb30724b9</li>
+    <li>key-2-of-3: 822c739S6184f694393bede3eb39f959</li>
+    <li>key-3-of-3: 04787ddef27c3dee1ee161b21670b4e4</li>
+</ul>
