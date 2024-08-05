@@ -1,6 +1,5 @@
-
 [<a href="../../index.html">HOME</a>]
- <link rel="stylesheet" href="../../style.css">
+<link rel="stylesheet" href="../../style.css">
 </style>
 <h1 id="writeup-of-mr-robot-1-vulnhub-machine">Writeup of Mr. Robot 1
     Vulnhub Machine</h1>
@@ -17,17 +16,17 @@
 </blockquote>
 <h2 id="start-exploiting">Start Exploiting</h2>
 <p>The nmap scan of the machines yeilds:</p>
-<p><img src="image-1.png" alt="Nmap scan" class="img-size"/></p>
+<p><img src="image-1.png" alt="Nmap scan" class="img-size" /></p>
 <p>As we see in above figure two ports are open https and http that
     means it is a webserver hosting a website.</p>
 <p>Opening the link in browser:</p>
 <p><img src="image-2.png" alt="Opening the website" class="img-size" /></p>
 <p>Let's see what we can do now. I started pocking at the machine. Then
     I found:</p>
-<p><img src="image-3.png" alt="key-1-of-3" class="img-size"/></p>
+<p><img src="image-3.png" alt="key-1-of-3" class="img-size" /></p>
 <p>Voila! We found one of the three keys. Let's see what other file
     containes.</p>
-<p><img src="image-4.png" alt="fsocity.dic" class="img-size"/></p>
+<p><img src="image-4.png" alt="fsocity.dic" class="img-size" /></p>
 <p>It looks like some sort of dictionary.<br />
     Let's see what we can do with it.<br />
     Well I'm stuck here, I think join action will do something in the web
@@ -38,15 +37,15 @@
     Only two ports are
     open................................................</p>
 <p>Finally we found something,</p>
-<p><img src="image.png" alt="found-something" class="img-size"/></p>
+<p><img src="image.png" alt="found-something" class="img-size" /></p>
 <p>Here is a login page,</p>
-<p><img src="image-5.png" alt="login-page" class="img-size"/></p>
+<p><img src="image-5.png" alt="login-page" class="img-size" /></p>
 <p>now how can we use fsocity.dic wordlist to get in. After some
     pocking.</p>
 <p>We find this,...</p>
-<p><img src="image-6.png" alt="rss-feed" class="img-size"/></p>
+<p><img src="image-6.png" alt="rss-feed" class="img-size" /></p>
 <p>and then this,</p>
-<p><img src="image-7.png" alt="wp-4.3.1-rce" class="img-size"/></p>
+<p><img src="image-7.png" alt="wp-4.3.1-rce" class="img-size" /></p>
 <!-- Exploit link: https://www.exploit-db.com/exploits/50255 -->
 
 <p>But I think their is another way, as the machine was designed in 2016
@@ -57,34 +56,34 @@
     The url given should be of wordpress login page.</p>
 <p><code>wpscan --url 192.168.180.129/wp-login.php --password fsocity_uniq.dic --username admin</code></p>
 <p>But it looks like it didn't work:</p>
-<p><img src="image-8.png" alt="no-success" class="img-size"/></p>
-<p><img src="image-9.png" alt="no-success"class="img-size" /></p>
+<p><img src="image-8.png" alt="no-success" class="img-size" /></p>
+<p><img src="image-9.png" alt="no-success" class="img-size" /></p>
 <p>Looks like Mr. Robot theme works,</p>
-<p><img src="image-10.png" alt="success" class="img-size"/></p>
-<p><img src="image-11.png" alt="interesting" class="img-size"/></p>
+<p><img src="image-10.png" alt="success" class="img-size" /></p>
+<p><img src="image-11.png" alt="interesting" class="img-size" /></p>
 <p>Interesting isn't it.</p>
 <p>Using this login I was able to log into admin panel of
     wordpress.<br />
     Following chatGPT hints, I have modified 404.php file in themes, so that
     it invokes a reverse shell.</p>
 <p>Voila! we got a reverse shell.</p>
-<p><img src="image-12.png" alt="rev-shell" class="img-size"/></p>
+<p><img src="image-12.png" alt="rev-shell" class="img-size" /></p>
 <p>Now we have to decrypt the md5 hash.</p>
-<p><img src="image-13.png" alt="md5-hash" class="img-size"/></p>
+<p><img src="image-13.png" alt="md5-hash" class="img-size" /></p>
 <p>We will use hashcat to decrypt it.</p>
-<p><img src="image-14.png" alt="hashcat" class="img-size"/></p>
+<p><img src="image-14.png" alt="hashcat" class="img-size" /></p>
 <p>but looks like it didn't work.</p>
-<p><img src="image-15.png" alt="didnt-work" class="img-size"/></p>
+<p><img src="image-15.png" alt="didnt-work" class="img-size" /></p>
 <p>Using rockyou wordlist.....</p>
-<p><img src="image-17.png" alt="cracked" class="img-size"/></p>
+<p><img src="image-17.png" alt="cracked" class="img-size" /></p>
 <p>Aaaaaaaaaaaaaannnnnnndddd we are in............</p>
-<p><img src="image-19.png" alt="in" class="img-size"/></p>
+<p><img src="image-19.png" alt="in" class="img-size" /></p>
 <p>Now Previlege Escalation part.<br />
     Finding programs having setuid bit set.<br />
     <code>find -type f -perm -04000 -ls 2&gt;/dev/null</code><br />
     it gives various outputs one of then is /usr/local/bin/nmap.
 </p>
-<p><img src="image-20.png" alt="key3" class="img-size"/></p>
+<p><img src="image-20.png" alt="key3" class="img-size" /></p>
 <p>So we have obtained all the keys:</p>
 <ul>
     <li>key-1-of-3: 073403c8a58a1f80d943455fb30724b9</li>
