@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+[<a href="../../index.html">HOME</a>]
+<link rel="stylesheet" href="../../style.css">
+<h1 id="moving-from-bash-to-loksh">Moving From Bash to Loksh</h1>
+<p><em>Date: 17-08-2024 </em></p>
+<p><a href="https://github.com/dimkr/loksh">Loksh</a> is the <a
+href="https://www.kernel.org/">Linux</a> port of the <a
+href="http://www.openbsd.org/">OpenBSD</a>’s ksh shell.</p>
+<h2 id="the-switch">The Switch</h2>
+<p>I found Loksh to be more usable than other ksh variants, mainly
+community branch ksh93u+m provided in Void Linux Packages. The problem
+with ksh93u+m was that history was broken, I couldn’t get history
+feature to work in it, well I would say that I didn’t really tried that
+hard like 15 to 20 minutes to make it work.</p>
+<p>The OpenBSD project’s main goal is to be as secure as possible. And
+as you can read from Loksh Github’s README “Unlike other ports of
+<em>ksh</em>, loksh targets only one platform, follows upstream closely
+and <a
+href="https://github.com/dimkr/loksh/compare/upstream%2Fmaster...master">keeps
+changes to a minimum</a>. loksh does not add any extra features; this
+reduces the risk of introducing security vulnerabilities and makes loksh
+a good fit for resource-constrained systems.”, It uses less resources
+while giving the same security features as in OpenBSD.</p>
+<p>I am not a power user with lot of shell scripts so the switch was
+almost painless.</p>
+<p>But I did requires some reading about setting up the prompt the way I
+like. But loksh makes is very easy with some similar features of
+Bash.</p>
+<p>One thing I should mention is that ksh is fast, faster than Bash. You
+can feel the increased responsiveness of the shell after immediate
+switch, like how you can feel the responsiveness when you move from a
+standard Desktop Environment’s terminal to say Alacritty or St. </p>
+<p>And ksh is also more POSIX compliant than Bash. So, the added benefit
+is that the scripts that you will write with ksh will be portable or
+easy to port to other POSIX-compliant shells.</p>
+<h2 id="what-i-belive-can-be-a-issue">What I belive can be a issue:</h2>
+<ol type="1">
+<li>The history of all sessions is merged into the single file i.e the
+history is shared across sessions. For example, if you open a terminal
+and type a command let us say “foo-bar” and you open another new
+terminal and type another command “bar-foo”, then you can access in
+history of terminal 1 “bar-foo” as last run command.</li>
+<li>Many programs does not work with ksh for example starship, fzf
+etc.</li>
+<li>If you coming from bash:
+<ol type="a">
+<li>Many Bash shortcuts will not work, For example Ctrl-a will not take
+the cursor to the starting of prompt.<br />
+</li>
+<li><code>source</code> does not work, instead <code>.</code> works. A
+common use case is to reload new changes in the ongoing session using
+<code>source ~/.bashrc</code>, but in ksh <code>. ~/.kshrc</code> works.
+<code>.kshrc</code> file is to ksh what <code>.bashrc</code> is to
+Bash.</li>
+</ol></li>
+</ol>
